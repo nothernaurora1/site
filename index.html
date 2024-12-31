@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Year Countdown</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #001f3f, #0074d9);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+        }
+
+        #countdown {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease-in-out;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            text-align: center;
+            max-width: 90%;
+            margin: auto;
+        }
+
+        #countdown span {
+            display: inline-block;
+            opacity: 0;
+            animation: countdownAnimation 1s ease-in-out forwards;
+        }
+
+        @keyframes countdownAnimation {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        #countdown .countdown-item {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .countdown-label {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        #message {
+            font-size: 2rem;
+            display: none;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #nowPlaying {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-style: italic;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            max-width: 90%;
+            text-align: center;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #nowPlaying:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive Design for Tablets and Phones */
+        @media (max-width: 768px) {
+            #countdown {
+                font-size: 2.5rem;
+                max-width: 95%;
+                gap: 5px;
+            }
+
+            #countdown .countdown-item {
+                min-width: 100px;
+                padding: 8px 15px;
+            }
+
+            #message {
+                font-size: 1.5rem;
+            }
+
+            #nowPlaying {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #countdown {
+                font-size: 2rem;
+                max-width: 100%;
+            }
+
+            #countdown .countdown-item {
+                min-width: 80px;
+                padding: 8px 12px;
+            }
+
+            #message {
+                font-size: 1rem;
+            }
+
+            #nowPlaying {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="prompt">Click anywhere to enable audio</div>
+    <div>
+        <div id="countdown">
+            <div class="countdown-item">
+                <div id="days">Loading...</div>
+                <div class="countdown-label">Days</div>
+            </div>
+            <div class="countdown-item">
+                <div id="hours">Loading...</div>
+                <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-item">
+                <div id="minutes">Loading...</div>
+                <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="countdown-item">
+                <div id="seconds">Loading...</div>
+                <div class="countdown-label">Seconds</div>
+            </div>
+        </div>
+        <div id="message">Happy New Year! 🎉</div>
+        <div id="nowPlaying" style="display: none;">Now Playing: </div>
+        <audio id="backgroundMusic" src="Hoobastank - The Reason.mp3" loop></audio>
+        <audio id="fireworkSound" src="your-firework-sound.mp3"></audio>
+    </div>
+
+    <script>
+        const countdownElement = document.getElementById('countdown');
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const messageElement = document.getElementById('message');
+        const music = document.getElementById('backgroundMusic');
+        const fireworkSound = document.getElementById('fireworkSound');
+        const prompt = document.getElementById('prompt');
+        const nowPlayingElement = document.getElementById('nowPlaying');
+
+        // Set the initial volume to 50%
+        music.volume = 0.5;
+
+        function enableAudio() {
+            prompt.style.display = 'none';
+            music.play().catch(error => {
+                console.error("Failed to play music:", error);
+            });
+
+            // Extract the song title from the filename (without extension)
+            const musicFileName = music.src.split('/').pop();  // Get the file name from src URL
+            const songTitle = musicFileName.replace(/\.[^/.]+$/, '');  // Remove file extension
+
+            // Replace %20 with spaces in the song title
+            const formattedTitle = songTitle.replace(/%20/g, ' ');
+
+            // Display the song title dynamically
+            nowPlayingElement.textContent = `Now Playing: "${formattedTitle}"`;
+            nowPlayingElement.style.display = 'block'; // Show "Now Playing" when music starts
+        }
+
+        // Wait for user interaction to enable audio
+        window.addEventListener('click', enableAudio);
+
+        // Set target date and time (New Year)
+        const targetDate = new Date('January 1, 2025 00:00:00').getTime();
+
+        // Update countdown every second
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                clearInterval(timer);
+                countdownElement.style.display = 'none';
+                messageElement.style.display = 'block';
+                fireworkSound.play(); // Play firework sound effect
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                // Update countdown elements
+                daysElement.textContent = days;
+                hoursElement.textContent = hours;
+                minutesElement.textContent = minutes;
+                secondsElement.textContent = seconds;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
